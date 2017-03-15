@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import Rotuer from './router'
+import { Link } from 'react-router'
 import { Button } from 'antd'
 import logo from './logo.svg'
 import './App.css'
@@ -15,6 +17,14 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
            <Button type="primary">Button</Button>
         </p>
+        <div>
+            <ul>
+                <li>
+                    <Link></Link>
+                </li>
+            </ul>
+        </div>
+          <Rotuer/>
       </div>
     );
   }
