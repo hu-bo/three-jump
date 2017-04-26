@@ -1,9 +1,9 @@
 import React from 'react'
-import App from '../App.js';
+import App from '../App.js'
 import {
+  Router,
   Route
 } from 'react-router'
-
 const About = () =>{
   return (
     <div>
@@ -14,11 +14,11 @@ const About = () =>{
   )
 }
 const routes = (
-  <Route>
+  <Router>
     <Route path="/" component={App}>
       <Route path="/About" component={About} />
     </Route>
-  </Route>
+  </Router>
 );
 
 export default routes
