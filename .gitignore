@@ -8,8 +8,7 @@
 
 # production
 /build
-#node
-/nodejs
+
 # misc
 .DS_Store
 .env

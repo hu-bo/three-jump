@@ -1,9 +1,6 @@
-import React, { Component } from 'react'
-import Rotuer from './router'
-import { Link } from 'react-router'
-import { Button } from 'antd'
-import logo from './logo.svg'
-import './App.css'
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
 
 class App extends Component {
   render() {
@@ -15,16 +12,7 @@ class App extends Component {
         </div>
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
-           <Button type="primary">Button</Button>
         </p>
-        <div>
-            <ul>
-                <li>
-                    <Link></Link>
-                </li>
-            </ul>
-        </div>
-          <Rotuer/>
       </div>
     );
   }

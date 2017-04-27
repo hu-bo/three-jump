@@ -1,0 +1,20 @@
+{
+  "presets": [
+    "babel-preset-react-app",
+    ["es2015", { "modules": false }]
+    "react",
+    "stage-2"
+  ],
+  "plugins": [
+    "transform-runtime",
+    "import",
+    "transform-class-properties",
+     [{ "libraryName": "antd", "style": "css" }]
+  ],
+  "comments": false,
+  "env": {
+    "test": {
+      "plugins": [ "istanbul" ]
+    }
+  }
+}
