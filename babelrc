@@ -8,8 +8,7 @@
   "plugins": [
     "transform-runtime",
     "import",
-    "transform-class-properties",
-     [{ "libraryName": "antd", "style": "css" }]
+    "transform-class-properties"
   ],
   "comments": false,
   "env": {

@@ -5,6 +5,11 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var getClientEnvironment = require('./env');
 var path = require('path')
 var paths = require('./paths');
+
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
+
 var webpackConfig = {
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
@@ -21,7 +26,8 @@ var webpackConfig = {
     alias: {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-      'react-native': 'react-native-web'
+      '@': resolve('src'),
+      'static': resolve('src/static')
     }
   },
   module: {
@@ -78,6 +84,9 @@ var webpackConfig = {
         loader: 'babel-loader',
         options: {
           babelrc: true,
+          plugins: [
+            ['import', [{ libraryName: "antd", style: 'css' }]]
+          ],
           cacheDirectory: true
         }
       },
