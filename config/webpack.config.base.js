@@ -67,6 +67,7 @@ var webpackConfig = {
           // Webpack 2 fixes this, but for now we include this hack.
           // https://github.com/facebookincubator/create-react-app/issues/1713
           /\.(js|jsx)(\?.*)?$/,
+          /\.less$/,
           /\.css$/,
           /\.json$/,
           /\.svg$/
@@ -124,6 +125,28 @@ var webpackConfig = {
             }
           }
         ]
+      },
+      // 解析 less 文件，并加入变量覆盖配置
+      {
+        test: /\.less$/,
+        use: [
+          {
+            loader: "style-loader"
+          }, 
+          {
+            loader: "css-loader"
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              modifyVars: {
+                "@primary-color": "#1DA57A",
+                "@icon-url": '"/static/fonts/iconfont"',
+              }
+            }
+          }
+        ]
+        //loader: 'style-loader!css-loader!postcss-loader!less-loader?{modifyVars:{"@primary-color":"#1DA57A"}}'
       },
       // JSON is not enabled by default in Webpack but both Node and Browserify
       // allow it implicitly so we also enable it.

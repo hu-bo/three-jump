@@ -1,0 +1,17 @@
+.logo{
+    background: #1E88E5;
+}
+.ant-layout-header{
+    background: #fff;
+    padding: 0 ;
+}
+.ant-layout-content{
+    margin: 6px 6px;
+    padding: 24px;
+    background: #fff;
+    min-height: 280px;
+}
+.ant-layout-sider{
+    overflow: auto;
+    background-color: #fff;
+}
