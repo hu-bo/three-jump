@@ -132,7 +132,7 @@ var webpackConfig = {
         use: [
           {
             loader: "style-loader"
-          }, 
+          },
           {
             loader: "css-loader"
           },
