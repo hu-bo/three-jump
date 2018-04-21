@@ -1,0 +1,36 @@
+{
+    "env": {
+      "es6": true,
+      "node": true,
+      "browser": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "globals": {
+      "$": true,
+      "window": true,
+      "document": true,
+      "__dirname": true
+    },
+    "settings": {
+      "import/resolver": {
+        "webpack": {
+          "config": "config/webpack.config.base.js"
+        }
+      }
+    },
+    "parser": "babel-eslint",
+    "rules": {
+      "indent": ["error", 4],
+      "linebreak-style": "off",
+      "import/prefer-default-export": 0,
+      "import/no-unresolved": 0,
+      "import/extensions": 0,
+      "no-continue": 0,
+      "prefer-const": 1,
+      "no-unused-vars": 1
+    }
+  }
+  
