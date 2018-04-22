@@ -81,13 +81,15 @@ export default class Game {
                 up: 'mouseup',
             };
 
-        canvas.addEventListener(mouseEvents.down, () => {
+        canvas.addEventListener(mouseEvents.down, (e) => {
+            e.stopPropagation();
             this.handleMousedown()
-        })
+        }, false);
         // 监听鼠标松开的事件
-        canvas.addEventListener(mouseEvents.up, () => {
+        canvas.addEventListener(mouseEvents.up, (e) => {
+            e.stopPropagation();
             this.handleMouseup()
-        })
+        }, false);
     }
     createJumper() {
         const jumper = createJumper();
