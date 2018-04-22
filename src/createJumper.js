@@ -1,22 +1,16 @@
 import { ObjectLoader } from 'three';
-
+import jumperModel from 'ROOT/model/jumper';
 let jumper = null;
 
 /**
  * @return {PromiseLike}
  */
 const createJumper = function () {
-    return new Promise(function (resolve) {
-        if (jumper !== null) {
-            resolve(jumper);
-            return;
-        }
-        import('ROOT/model/jumper.json').then(function (res) {
-            jumper = ObjectLoader.prototype.parse(res);
-            jumper.castShadow = true;
-             
-            resolve(jumper);
-        });
-    })
+    if (jumper !== null) {
+        return jumper;
+    }
+    jumper = ObjectLoader.prototype.parse(jumperModel);
+    jumper.castShadow = true;
+    return jumper
 }
 export default createJumper;

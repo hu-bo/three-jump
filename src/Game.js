@@ -15,7 +15,7 @@ export default class Game {
 
     init() {
         this.config = {
-            cubeDis: isMobile ? [14 , 20] : [20, 30], // 间距
+            cubeDis: isMobile ? [14, 20] : [20, 30], // 间距
             cubeMaxLen: 6, // 超出此范围删除
             direction: 0, // 方向(0 | 2)， 默认是x方向
             speedXCoe: 0.35, // 系数 speed = speedCoe * power
@@ -40,6 +40,8 @@ export default class Game {
         this.power = 0;
         // jumper所在的方块
         this.currentCubeIndex = 0;
+        // 分数
+        this.grade = 0;
         this.createCube();
         this.createCube();
         this.createJumper();
@@ -48,6 +50,7 @@ export default class Game {
         this.cubes.children = [];
         this.nextCubePosition = [0, 0, 0];
         this.currentCubeIndex = 0;
+        this.grade = 0;
         this.createCube();
         this.createCube();
         this.jumper.position.set(
@@ -60,7 +63,7 @@ export default class Game {
         console.log(scene)
     }
     end() {
-        this.nextCubePosition  = [0, 0, 0];
+        this.nextCubePosition = [0, 0, 0];
         this.currentCubeIndex = 0;
         // this.restart();
     }
@@ -88,24 +91,23 @@ export default class Game {
     }
     createJumper() {
         const jumper = createJumper();
-        jumper.then((j) => {
-            this.jumperBody = j.getObjectByName('JumperBody');
-            this.jumperHead = j.getObjectByName('jumperHead');
-            this.jumper = j;
-            // 产生阴影
-            this.jumperBody.castShadow = true;
-            this.jumperHead.castShadow = true;
-            this.jumper.position.y = 3.6;
+        this.jumperBody = jumper.getObjectByName('JumperBody');
+        this.jumperHead = jumper.getObjectByName('jumperHead');
+        this.jumper = jumper;
+        // 产生阴影
+        this.jumperBody.castShadow = true;
+        this.jumperHead.castShadow = true;
+        this.jumper.position.y = 3.6;
 
 
-            // 记录初始状态
-            this.jumper.userData.initialPosition = this.jumper.position.clone();
-            this.jumperHead.userData.initialPosition = this.jumperHead.position.clone();
-            this.jumperBody.userData.initialScale = this.jumperBody.scale.clone();
-            this.jumperBody.userData.initialPosition = this.jumperBody.position.clone();
+        // 记录初始状态
+        this.jumper.userData.initialPosition = this.jumper.position.clone();
+        this.jumperHead.userData.initialPosition = this.jumperHead.position.clone();
+        this.jumperBody.userData.initialScale = this.jumperBody.scale.clone();
+        this.jumperBody.userData.initialPosition = this.jumperBody.position.clone();
 
-            scene.add(j);
-        })
+        scene.add(this.jumper);
+
     }
 
     /**
@@ -120,10 +122,10 @@ export default class Game {
         // 更新坐标
         // this.cubes is a Group
         const dis = !this.cubes.children.length ? 0 : random(this.config.cubeDis[0], this.config.cubeDis[1])
-        this.nextCubePosition [direction] += dis;
+        this.nextCubePosition[direction] += dis;
 
         const cube = createCube();
-        cube.position.set(...this.nextCubePosition );
+        cube.position.set(...this.nextCubePosition);
         this.cubes.add(cube);
     }
 
@@ -159,19 +161,17 @@ export default class Game {
         let disC;  // jumper和当前方块的坐标轴距离
         let disN;  // jumper和下一个方块的坐标轴距离
         // 判断下一个方块相对当前方块的方向来确定计算距离的坐标轴
-        if (direction === 'x') {
-            disC = Math.abs(jumpP.x - cubeCurrentP.x);
-            disN = Math.abs(jumpP.x - cubeNextP.x);
-        } else {
-            disC = Math.abs(jumpP.z - cubeCurrentP.z);
-            disN = Math.abs(jumpP.z - cubeNextP.z);
-        }
+
+        disC = Math.abs(jumpP[direction] - cubeCurrentP[direction]);
+        disN = Math.abs(jumpP[direction] - cubeNextP[direction]);
+
         // 如果大小不一样则需要两个值（目前一个就可以）
         const nextTargetDis = cubeNext.geometry.parameters.width / 2; // 当前方块的宽的一半
         const currentTargetDis = cubeNext.geometry.parameters.width / 2; // 下一个方块的宽的一半
         const jumpBodyRadiusBottom = this.jumperBody.geometry.parameters.radiusBottom; // jumper的地部半径
 
-
+        //  || (disN > nextTargetDis && disN < cubeNextP[direction] + nextTargetDis)
+        //  || (disN > nextTargetDis && disN < cubeNextP[direction] + nextTargetDis)
         // 落再当前
         if (disC < currentTargetDis) {
             return 'current';
@@ -251,6 +251,18 @@ export default class Game {
             requestAnimationFrame(jump);
         }
         jump();
+
+        if (this.power > 12) {
+            // 左手拇指是z，上是y, 中指是x，
+            const direction = this.config.direction === 0 ? 'z' : 'x';
+            new Tween(this.jumper.rotation)
+                .to({
+                    [direction]: (direction === 'z' ? -360 : 360) * Math.PI / 180
+                }, this.power * 50)
+                .on('complete', () => {
+                })
+                .start()
+        }
     }
 
     async handleJumpEnd() {
@@ -267,6 +279,7 @@ export default class Game {
             // 游标切至下一个， 并继续创建方块
             this.currentCubeIndex++;
             this.createCube();
+            this.grade++;
             break;
         case 'floor':
             this.handleJumpFail(res);
@@ -289,13 +302,24 @@ export default class Game {
      * @param {'floor' | 'currentEdge' | 'nextEdge'} 落什么位置
      */
     handleJumpFail(position) {
-        // 左手拇指是z，上是y, 中指是x，
+        
+        // 左手拇指是z，上是y, 中指是x， 
+        // this.config.direction0代表代表下一个方块再X方向 , 2代表下一个方块再Z方向
+        // direction代表需要沿哪根轴旋转
         const direction = this.config.direction === 0 ? 'z' : 'x';
+        // 右手扭动旋转轴，角度为负数的效果为顺时针
+        let deg = -90;
+        if (
+            position === 'nextEdge' && this.config.direction === 0 ||
+            position === 'currentEdge' && this.config.direction === 2
+        ) {
+            deg = 90;
+        }
         // 落到边缘才倒地
         if (position === 'currentEdge' || position === 'nextEdge') {
             new Tween(this.jumper.rotation)
-                .to({ 
-                    [direction]: (position === 'currentEdge' ? 90 : -90) * Math.PI / 180 
+                .to({
+                    [direction]: deg * Math.PI / 180
                 }, 400)
                 .on('complete', () => {
                 })
@@ -304,8 +328,9 @@ export default class Game {
         new Tween(this.jumper.position)
             .to({ y: -1 }, 400)
             .on('complete', () => {
-                if (window.confirm('重新开始')) {
+                if (window.confirm(`得分${this.grade}, 是否继续`)) {
                     this.restart();
+                    
                 }
             })
             .start()

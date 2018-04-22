@@ -1,17 +1,19 @@
+const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const webpackBaseConfig = require('./webpack.config.base.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const paths = require('./paths');
 // 配置
 const webpackDevConfig = merge(webpackBaseConfig('minimize'), {
-  devtool: '#source-map',
+  devtool: false,
   output: {
-    publicPath: '/',
-    filename: 'js/[name].[chunkhash].js', // [chunkhash]
-    chunkFilename: 'js/[name].[chunkhash].js' // [chunkhash]
+    publicPath: './',
+    filename: 'js/[name].js', // [chunkhash]
+    chunkFilename: 'js/[name].js' // [chunkhash]
   },
   plugins: [
     new ExtractTextPlugin({
@@ -46,7 +48,7 @@ const webpackDevConfig = merge(webpackBaseConfig('minimize'), {
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
       },
-    }),
+    })
   ],
 });
 

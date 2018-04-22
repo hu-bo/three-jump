@@ -10,8 +10,8 @@ var animateRunList = [];
 
 var renderer = new WebGLRenderer({
     antialias: true, // 抗锯齿
-    alpha: true, // 透明
-    powerPreference: 'high-performance', // 高性能模式
+    // alpha: true, // 透明
+    // powerPreference: 'high-performance', // 高性能模式
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xCCCCCC, 1.0);
