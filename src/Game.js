@@ -15,7 +15,7 @@ export default class Game {
 
     init() {
         this.config = {
-            cubeDis: isMobile ? [14, 20] : [20, 30], // 间距
+            cubeDis: isMobile ? [14, 20] : [20, 20], // 间距
             cubeMaxLen: 6, // 超出此范围删除
             direction: 0, // 方向(0 | 2)， 默认是x方向
             speedXCoe: 0.35, // 系数 speed = speedCoe * power
@@ -60,7 +60,6 @@ export default class Game {
         );
         this.jumper.rotation.set(0, 0, 0);
         this.updateCameraPosition();
-        console.log(scene)
     }
     end() {
         this.nextCubePosition = [0, 0, 0];
@@ -122,7 +121,6 @@ export default class Game {
         const direction = random(0, 1) === 0 ? 0 : 2;
         // 更新当前方向
         this.config.direction = direction;
-        console.log(direction)
         // 更新坐标
         // this.cubes is a Group
         const dis = !this.cubes.children.length ? 0 : random(this.config.cubeDis[0], this.config.cubeDis[1])
@@ -162,12 +160,12 @@ export default class Game {
             z: this.cubes.children[this.cubes.children.length - 1].position.z
         }
 
-        let disC;  // jumper和当前方块的坐标轴距离
-        let disN;  // jumper和下一个方块的坐标轴距离
-        // 判断下一个方块相对当前方块的方向来确定计算距离的坐标轴
-
-        disC = Math.abs(jumpP[direction] - cubeCurrentP[direction]);
-        disN = Math.abs(jumpP[direction] - cubeNextP[direction]);
+        
+        /* 判断下一个方块相对当前方块的方向来确定计算距离的坐标轴 */
+        // jumper和当前方块的坐标轴距离
+        const disC = jumpP[direction] - cubeCurrentP[direction];
+        // jumper和下一个方块的坐标轴距离
+        const disN = jumpP[direction] - cubeNextP[direction];
 
         // 如果大小不一样则需要两个值（目前一个就可以）
         const nextTargetDis = cubeNext.geometry.parameters.width / 2; // 当前方块的宽的一半
@@ -177,19 +175,26 @@ export default class Game {
         //  || (disN > nextTargetDis && disN < cubeNextP[direction] + nextTargetDis)
         //  || (disN > nextTargetDis && disN < cubeNextP[direction] + nextTargetDis)
         // 落再当前
-        if (disC < currentTargetDis) {
+        
+        if (Math.abs(disC) < currentTargetDis) {
             return 'current';
-        } else if (disN < nextTargetDis) {
+        } else if (Math.abs(disN) < nextTargetDis) {
             return 'next';
-        } else if (disC > currentTargetDis + jumpBodyRadiusBottom && disN > nextTargetDis + jumpBodyRadiusBottom) {
+        } else if (Math.abs(disC) > currentTargetDis + jumpBodyRadiusBottom && Math.abs(disN) > nextTargetDis + jumpBodyRadiusBottom) {
             // 完美落在空地上
             return 'floor';
-        } else if (disC <= currentTargetDis + jumpBodyRadiusBottom) {
+        } else if (Math.abs(disC) <= currentTargetDis + jumpBodyRadiusBottom) {
             // 落在当前边缘上
             return 'currentEdge';
-        } else if (disN <= nextTargetDis + jumpBodyRadiusBottom) {
+        } else if (Math.abs(disN) <= nextTargetDis + jumpBodyRadiusBottom) {
             // 落在下一个边缘上
-            return 'nextEdge';
+            if (disN > 0) {
+                // 靠远的边缘
+                return 'nextEdgeFar';
+            }
+            // 靠近的边缘
+            return 'nextEdgeNear';
+            
         }
     }
 
@@ -255,14 +260,14 @@ export default class Game {
             requestAnimationFrame(jump);
         }
         jump();
-
+        console.log((this.power), this.jumperState)
         if (this.power > 12) {
             // 左手拇指是z，上是y, 中指是x，
             const direction = this.config.direction === 0 ? 'z' : 'x';
             new Tween(this.jumper.rotation)
                 .to({
                     [direction]: (direction === 'z' ? -360 : 360) * Math.PI / 180
-                }, this.power * 50)
+                }, this.power * 80)
                 .on('complete', () => {
                 })
                 .start()
@@ -271,7 +276,7 @@ export default class Game {
 
     async handleJumpEnd() {
         const res = this.checkJumpState();
-
+        this.jumperState = 'jumpend';
         switch (res) {
         case 'cuerrnt':
             // 先检测是否成功落地再移动camera
@@ -291,36 +296,41 @@ export default class Game {
         case 'currentEdge':
             this.handleJumpFail(res);
             break;
-        case 'nextEdge':
+        case 'nextEdgeFar':
+            this.handleJumpFail(res);
+            break;
+        case 'nextEdgeNear':
             this.handleJumpFail(res);
             break;
         }
         this.power = 0;
-        this.jumperState = 'jumpend';
-
+        
+        
+        
 
     }
 
     /**
      * 
-     * @param {'floor' | 'currentEdge' | 'nextEdge'} 落什么位置
+     * @param {string} 落什么位置
      */
     handleJumpFail(position) {
-        
+        this.jumperState = 'fail';
         // 左手拇指是z，上是y, 中指是x， 
-        // this.config.direction0代表代表下一个方块再X方向 , 2代表下一个方块再Z方向
+        // this.config.direction 0代表代表下一个方块再X方向 , 2代表下一个方块再Z方向
         // direction代表需要沿哪根轴旋转
         const direction = this.config.direction === 0 ? 'z' : 'x';
         // 右手扭动旋转轴，角度为负数的效果为顺时针
         let deg = -90;
         if (
-            position === 'nextEdge' && this.config.direction === 0 ||
-            position === 'currentEdge' && this.config.direction === 2
+            position === 'currentEdge' && this.config.direction === 2 ||
+            position === 'nextEdgeNear' && this.config.direction === 0 ||
+            position === 'nextEdgeNear' && this.config.direction === 2
         ) {
             deg = 90;
         }
         // 落到边缘才倒地
-        if (position === 'currentEdge' || position === 'nextEdge') {
+        if (position.indexOf('Edge') > -1) {
             new Tween(this.jumper.rotation)
                 .to({
                     [direction]: deg * Math.PI / 180
