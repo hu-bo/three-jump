@@ -83,11 +83,13 @@ export default class Game {
 
         canvas.addEventListener(mouseEvents.down, (e) => {
             e.stopPropagation();
+            e.preventDefault();
             this.handleMousedown()
         }, false);
         // 监听鼠标松开的事件
         canvas.addEventListener(mouseEvents.up, (e) => {
             e.stopPropagation();
+            e.preventDefault();
             this.handleMouseup()
         }, false);
     }
