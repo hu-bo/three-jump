@@ -15,8 +15,8 @@ export default class Game {
 
     init() {
         this.config = {
-            cubeDis: isMobile ? [14, 20] : [20, 20], // 间距
-            cubeMaxLen: 6, // 超出此范围删除
+            cubeDis: isMobile ? [14, 20] : [20, 20], // 下一次方块生成的间距范围
+            cubeMaxLen: 6, // 方块超出此范围删除
             direction: 0, // 方向(0 | 2)， 默认是x方向
             speedXCoe: 0.35, // 系数 speed = speedCoe * power
             speedYCoe: 0.3, // 系数 speed = speedCoe * power
@@ -246,7 +246,7 @@ export default class Game {
     hanldleJumpStart() {
         const direction = this.config.direction === 0 ? 'x' : 'z';
         let speedY = this.power * this.config.speedYCoe;
-        let speedX = this.power * this.config.speedXCoe;
+        const speedX = this.power * this.config.speedXCoe;
         // this.cubes is a Group
         const jump = () => {
             speedY -= this.config.gravity;
@@ -283,10 +283,14 @@ export default class Game {
             await this.updateCameraPosition();
             break;
         case 'next':
-            // 先检测是否成功落地再移动camera
-            await this.updateCameraPosition();
             // 游标切至下一个， 并继续创建方块
-            this.currentCubeIndex++;
+            await this.updateCameraPosition();
+            // 移除早期的方块
+            if (this.cubes.children.length > this.config.cubeMaxLen) {
+                this.cubes.remove(this.cubes.children[0]);
+            } else {
+                this.currentCubeIndex++;
+            }
             this.createCube();
             this.grade++;
             break;
@@ -342,10 +346,7 @@ export default class Game {
         new Tween(this.jumper.position)
             .to({ y: -1 }, 400)
             .on('complete', () => {
-                if (window.confirm(`得分${this.grade}, 是否继续`)) {
-                    this.restart();
-                    
-                }
+                this.onFail();
             })
             .start()
 
