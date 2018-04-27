@@ -1,10 +1,10 @@
 import { Scene } from 'three';
-import { airectionalLight, ambientLight } from './light';
+import { directionalLight, ambientLight } from './light';
 import floor from './floor';
 
 var scene = new Scene();
 
-scene.add(airectionalLight);
+scene.add(directionalLight);
 scene.add(floor);
 scene.add(ambientLight);
 

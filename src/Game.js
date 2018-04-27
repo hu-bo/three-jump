@@ -5,7 +5,7 @@ import camera from './three/camera';
 import createCube from './createCube';
 import createJumper from './createJumper';
 import random from 'lodash.random';
-
+import {directionalLight} from './three/scene/light';
 
 
 export default class Game {
@@ -15,7 +15,7 @@ export default class Game {
 
     init() {
         this.config = {
-            cubeDis: isMobile ? [14, 20] : [20, 20], // 下一次方块生成的间距范围
+            cubeDis: isMobile ? [19, 25] : [20, 30], // 下一次方块生成的间距范围
             cubeMaxLen: 6, // 方块超出此范围删除
             direction: 0, // 方向(0 | 2)， 默认是x方向
             speedXCoe: 0.35, // 系数 speed = speedCoe * power
@@ -183,10 +183,10 @@ export default class Game {
         } else if (Math.abs(disC) > currentTargetDis + jumpBodyRadiusBottom && Math.abs(disN) > nextTargetDis + jumpBodyRadiusBottom) {
             // 完美落在空地上
             return 'floor';
-        } else if (Math.abs(disC) <= currentTargetDis + jumpBodyRadiusBottom) {
+        } else if (Math.abs(disC) < currentTargetDis + jumpBodyRadiusBottom) {
             // 落在当前边缘上
             return 'currentEdge';
-        } else if (Math.abs(disN) <= nextTargetDis + jumpBodyRadiusBottom) {
+        } else if (Math.abs(disN) < nextTargetDis + jumpBodyRadiusBottom) {
             // 落在下一个边缘上
             if (disN > 0) {
                 // 靠远的边缘
@@ -281,10 +281,12 @@ export default class Game {
         case 'cuerrnt':
             // 先检测是否成功落地再移动camera
             await this.updateCameraPosition();
+            await this.updateLightPosition();
             break;
         case 'next':
             // 游标切至下一个， 并继续创建方块
             await this.updateCameraPosition();
+            await this.updateLightPosition();
             // 移除早期的方块
             if (this.cubes.children.length > this.config.cubeMaxLen) {
                 this.cubes.remove(this.cubes.children[0]);
@@ -329,7 +331,7 @@ export default class Game {
         if (
             position === 'currentEdge' && this.config.direction === 2 ||
             position === 'nextEdgeNear' && this.config.direction === 0 ||
-            position === 'nextEdgeNear' && this.config.direction === 2
+            position === 'nextEdgeFar' && this.config.direction === 2
         ) {
             deg = 90;
         }
@@ -362,6 +364,25 @@ export default class Game {
                 .to({
                     x: position.x - 29.97,
                     z: position.z + 27.59
+                }, 500)
+                .start()
+                .on('complete', () => {
+                    resolve();
+                })
+        });
+    }
+
+    /**
+     * 更新灯光位置
+     * @return { Promise }
+     */
+    updateLightPosition() {
+        return new Promise((resolve) => {
+            const position = this.jumper.position.clone();
+            new Tween(directionalLight.position)
+                .to({
+                    x: position.x - 50,
+                    z: position.z + 150
                 }, 500)
                 .start()
                 .on('complete', () => {

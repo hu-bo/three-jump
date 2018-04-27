@@ -43,6 +43,7 @@ function animate() {
     render();
 }
 animate();
+
 // 添加在animate中要执行的操作队列
 animateRunList.push(update);
 animateRunList.push(function() {
