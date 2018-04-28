@@ -1,6 +1,6 @@
 # three-jump
-基于three.js的跳一跳
-
+基于three.js的跳一跳</br>
+<a href="https://hb-bobo.github.io/three-jump/"> 在线试一试 </a>
 
 # three 必要
 scene, camera and renderer,
@@ -44,9 +44,37 @@ var controls = new OrbitControls(camera, renderer.domElement);
 
 
 # loader
-JSONLoader parse .js
-ObjectLoader parse .json
+```javascript
+// instantiate a loader
+var loader = new THREE.JSONLoader();
 
+// load a resource
+loader.load(
+	// resource URL
+	'models/animated/monster/monster.js',
+
+	// onLoad callback
+	function ( geometry, materials ) {
+		var material = materials[ 0 ];
+		var object = new THREE.Mesh( geometry, material );
+		scene.add( object );
+	},
+
+	// onProgress callback
+	function ( xhr ) {
+		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+	},
+
+	// onError callback
+	function( err ) {
+		console.log( 'An error happened' );
+	}
+);
+
+loader.parse  ---> .js
+
+ObjectLoader.prototype.parse  ---> .json
+```
 
 # 灯光
 
@@ -56,10 +84,13 @@ DirectionalLigh + AmbientLight
 
 
 
-# 阴影
+# 阴影(都必须设置阴影才有效)
+```javascript
 renderer.shadowMap.enabled = true;
-airectionalLight.castShadow = true;
-cube.castShadow = true;
+Light.castShadow = true;
+cube.castShadow = true; // Mesh
+```
+
 
 # 游戏逻辑(step-3)
  1. 缩小身体
