@@ -30,7 +30,7 @@ const webpackDevConfig = merge(webpackBaseConfig('minimize'), {
       template: paths.appHtml,
       filename: 'index.html',
       inject: 'body',
-      hash: true,
+      hash: false,
       minify: {
         removeComments: true,
         collapseWhitespace: true,

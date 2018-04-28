@@ -280,21 +280,24 @@ export default class Game {
         switch (res) {
         case 'cuerrnt':
             // 先检测是否成功落地再移动camera
-            await this.updateCameraPosition();
-            await this.updateLightPosition();
+            // await this.updateCameraPosition();
+            // await this.updateLightPosition();
             break;
         case 'next':
             // 游标切至下一个， 并继续创建方块
-            await this.updateCameraPosition();
-            await this.updateLightPosition();
-            // 移除早期的方块
-            if (this.cubes.children.length > this.config.cubeMaxLen) {
-                this.cubes.remove(this.cubes.children[0]);
-            } else {
-                this.currentCubeIndex++;
-            }
-            this.createCube();
-            this.grade++;
+            Promise.all([
+                this.updateCameraPosition(),
+                this.updateLightPosition()
+            ]).then(() => {
+                // 移除早期的方块
+                if (this.cubes.children.length > this.config.cubeMaxLen) {
+                    this.cubes.remove(this.cubes.children[0]);
+                } else {
+                    this.currentCubeIndex++;
+                }
+                this.createCube();
+                this.grade++;
+            })
             break;
         case 'floor':
             this.handleJumpFail(res);
