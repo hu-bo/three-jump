@@ -89,6 +89,8 @@ DirectionalLigh + AmbientLight
 renderer.shadowMap.enabled = true;
 Light.castShadow = true;
 cube.castShadow = true; // Mesh
+// 部分场景还需接收阴影
+floor.receiveShadow = true;  
 ```
 
 
@@ -97,6 +99,7 @@ cube.castShadow = true; // Mesh
  2. 跳跃， 方块创建方向 = 跳跃方向， 跳跃动画
  3. 检测是否跳到方块上
  4. 倒地方向
+    > 左手坐标系，右手扭动旋转轴，顺时针为负数(角度)。
  5. 移动相机，移动灯光（未做）
  6. 删除不可见的方块
 ![计算落地状态](https://github.com/hb-bobo/three-jump/blob/master/%E8%AE%A1%E7%AE%97%E8%90%BD%E5%9C%B0%E7%8A%B6%E6%80%81.png?raw=true)
