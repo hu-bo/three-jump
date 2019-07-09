@@ -255,6 +255,7 @@ export default class Game {
 
             if (this.jumper.position.y <= this.jumper.userData.initialPosition.y) {
                 this.handleJumpEnd();
+                this.jumper.position.y = this.jumper.userData.initialPosition.y;
                 return;
             }
             requestAnimationFrame(jump);
