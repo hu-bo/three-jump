@@ -1,6 +1,6 @@
 # three-jump
 基于three.js的跳一跳</br>
-<a href="https://hb-bobo.github.io/three-jump/"> 在线试一试 </a>
+<a href="https://hu-bo.github.io/three-jump/"> 在线试一试 </a>
 
 # three 必要
 scene, camera and renderer,
